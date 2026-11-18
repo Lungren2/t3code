@@ -63,20 +63,22 @@ import {
   CheckIcon,
   ChevronRightIcon,
   CornerLeftUpIcon,
+  FilePlusIcon,
   FileSearchIcon,
+  FileTextIcon,
   FolderGit2Icon,
   FolderIcon,
   FolderPlusIcon,
-  MessageSquareDashedIcon,
   LinkIcon,
+  MessageSquareDashedIcon,
   MessageSquareIcon,
-  PaletteIcon,
-  RotateCcwIcon,
-  SettingsIcon,
   MonitorIcon,
+  PaletteIcon,
   PinIcon,
   PinOffIcon,
   PlugIcon,
+  RotateCcwIcon,
+  SettingsIcon,
   SquarePenIcon,
   TextSearchIcon,
   UserPlusIcon,
@@ -1711,6 +1713,29 @@ function OpenCommandPaletteDialog(props: {
     shortcutCommand: "usage.open",
     run: async () => {
       await navigate({ to: "/usage" });
+    },
+  });
+
+  actionItems.push({
+    kind: "action",
+    value: "action:pages",
+    searchTerms: ["pages", "notes", "docs", "documents", "write", "notion", "space"],
+    title: "Open pages",
+    icon: <FileTextIcon className={ITEM_ICON_CLASS} />,
+    run: async () => {
+      await navigate({ to: "/pages", search: {} });
+    },
+  });
+
+  actionItems.push({
+    kind: "action",
+    value: "action:new-page",
+    searchTerms: ["new page", "create page", "note", "doc", "write"],
+    title: "New page",
+    icon: <FilePlusIcon className={ITEM_ICON_CLASS} />,
+    shortcutCommand: "pages.new",
+    run: async () => {
+      await navigate({ to: "/pages", search: { new: true } });
     },
   });
 

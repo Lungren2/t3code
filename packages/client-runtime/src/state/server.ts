@@ -1503,6 +1503,10 @@ export function createServerEnvironmentAtoms<R, E>(
       label: "environment-data:server:scheduled-tasks:live",
       tag: WS_METHODS.scheduledTasksSubscribe,
     }),
+    pagesLive: createEnvironmentRpcSubscriptionAtomFamily(runtime, {
+      label: "environment-data:server:pages:live",
+      tag: WS_METHODS.pagesSubscribe,
+    }),
     // A cold transcript scan is measured in seconds, so keep the result around
     // long enough that switching windows or re-rendering does not rescan. With
     // nothing to show yet, the server's last scan answers first, then a plain
@@ -1795,6 +1799,35 @@ export function createServerEnvironmentAtoms<R, E>(
       tag: WS_METHODS.scheduledTasksRotateWebhookToken,
       scheduler: configScheduler,
       concurrency: configConcurrency,
+    }),
+    // The editor reads a page when it opens and when the live list shows a newer revision.
+    getPage: createEnvironmentRpcCommand(runtime, {
+      label: "environment-data:server:page:get",
+      tag: WS_METHODS.pagesGet,
+    }),
+    createPage: createEnvironmentRpcCommand(runtime, {
+      label: "environment-data:server:page:create",
+      tag: WS_METHODS.pagesCreate,
+    }),
+    updatePage: createEnvironmentRpcCommand(runtime, {
+      label: "environment-data:server:page:update",
+      tag: WS_METHODS.pagesUpdate,
+    }),
+    movePage: createEnvironmentRpcCommand(runtime, {
+      label: "environment-data:server:page:move",
+      tag: WS_METHODS.pagesMove,
+    }),
+    deletePage: createEnvironmentRpcCommand(runtime, {
+      label: "environment-data:server:page:delete",
+      tag: WS_METHODS.pagesDelete,
+    }),
+    restorePage: createEnvironmentRpcCommand(runtime, {
+      label: "environment-data:server:page:restore",
+      tag: WS_METHODS.pagesRestore,
+    }),
+    generatePageEdit: createEnvironmentRpcCommand(runtime, {
+      label: "environment-data:server:page:generate-edit",
+      tag: WS_METHODS.pagesGenerateEdit,
     }),
     createGuestShare: createEnvironmentRpcCommand(runtime, {
       label: "environment-data:server:guest-share:create",

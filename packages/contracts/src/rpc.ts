@@ -151,6 +151,7 @@ import {
   VcsStatusSubscriptionInput,
   VcsStatusResult,
   VcsStatusStreamEvent,
+  TextGenerationError,
 } from "./git.ts";
 import {
   ReviewBranchCommitsInput,
@@ -409,6 +410,21 @@ import {
   ScheduledTaskUpsertInput,
   ScheduledTaskMutationResult,
 } from "./scheduledTask.ts";
+import {
+  PageCreateInput,
+  PageDeleteInput,
+  PageDeleteResult,
+  PageGenerateEditInput,
+  PageGenerateEditResult,
+  PageGetInput,
+  PageListInput,
+  PageListResult,
+  PageMoveInput,
+  PageResult,
+  PageRestoreInput,
+  PageServiceError,
+  PageUpdateInput,
+} from "./pages.ts";
 import { SecretRequestAnswerInput, SecretRequestError } from "./secretRequest.ts";
 import {
   ProjectCloneActionInput,
@@ -586,6 +602,15 @@ export const WS_METHODS = {
   guestShareCreate: "guestShare.create",
   scheduledTasksListWebhookDeliveries: "scheduledTasks.listWebhookDeliveries",
   scheduledTasksGetWebhookDelivery: "scheduledTasks.getWebhookDelivery",
+
+  pagesSubscribe: "pages.subscribe",
+  pagesGet: "pages.get",
+  pagesCreate: "pages.create",
+  pagesUpdate: "pages.update",
+  pagesMove: "pages.move",
+  pagesDelete: "pages.delete",
+  pagesRestore: "pages.restore",
+  pagesGenerateEdit: "pages.generateEdit",
 
   cloudGetRelayClientStatus: "cloud.getRelayClientStatus",
   cloudInstallRelayClient: "cloud.installRelayClient",
@@ -2157,6 +2182,57 @@ const WsSubscribeServerLifecycleRpc = Rpc.make(WS_METHODS.subscribeServerLifecyc
   stream: true,
 });
 
+const PageRpcError = Schema.Union([PageServiceError, EnvironmentAuthorizationError]);
+
+const WsPagesSubscribeRpc = Rpc.make(WS_METHODS.pagesSubscribe, {
+  payload: PageListInput,
+  success: PageListResult,
+  error: PageRpcError,
+  stream: true,
+});
+
+const WsPagesGetRpc = Rpc.make(WS_METHODS.pagesGet, {
+  payload: PageGetInput,
+  success: PageResult,
+  error: PageRpcError,
+});
+
+const WsPagesCreateRpc = Rpc.make(WS_METHODS.pagesCreate, {
+  payload: PageCreateInput,
+  success: PageResult,
+  error: PageRpcError,
+});
+
+const WsPagesUpdateRpc = Rpc.make(WS_METHODS.pagesUpdate, {
+  payload: PageUpdateInput,
+  success: PageResult,
+  error: PageRpcError,
+});
+
+const WsPagesMoveRpc = Rpc.make(WS_METHODS.pagesMove, {
+  payload: PageMoveInput,
+  success: PageResult,
+  error: PageRpcError,
+});
+
+const WsPagesDeleteRpc = Rpc.make(WS_METHODS.pagesDelete, {
+  payload: PageDeleteInput,
+  success: PageDeleteResult,
+  error: PageRpcError,
+});
+
+const WsPagesRestoreRpc = Rpc.make(WS_METHODS.pagesRestore, {
+  payload: PageRestoreInput,
+  success: PageResult,
+  error: PageRpcError,
+});
+
+const WsPagesGenerateEditRpc = Rpc.make(WS_METHODS.pagesGenerateEdit, {
+  payload: PageGenerateEditInput,
+  success: PageGenerateEditResult,
+  error: Schema.Union([PageServiceError, TextGenerationError, EnvironmentAuthorizationError]),
+});
+
 const WsScheduledTasksSubscribeRpc = Rpc.make(WS_METHODS.scheduledTasksSubscribe, {
   payload: ScheduledTaskListInput,
   success: ScheduledTaskListResult,
@@ -2320,6 +2396,14 @@ export const WsRpcGroup = RpcGroup.make(
   WsServerGetUsageSummaryRpc,
   WsServerRefreshUsageRatesRpc,
   WsServerSignalProcessRpc,
+  WsPagesSubscribeRpc,
+  WsPagesGetRpc,
+  WsPagesCreateRpc,
+  WsPagesUpdateRpc,
+  WsPagesMoveRpc,
+  WsPagesDeleteRpc,
+  WsPagesRestoreRpc,
+  WsPagesGenerateEditRpc,
   WsScheduledTasksSubscribeRpc,
   WsScheduledTasksUpsertRpc,
   WsScheduledTasksSetEnabledRpc,

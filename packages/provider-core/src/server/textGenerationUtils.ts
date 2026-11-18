@@ -126,3 +126,10 @@ export function normalizeCliError(
     cause: error,
   });
 }
+
+/** Models sometimes fence their whole answer; the page wants the Markdown inside. */
+export function sanitizePageEditMarkdown(raw: string): string {
+  const trimmed = raw.trim();
+  const fenced = /^```(?:markdown|md)?[ \t]*\r?\n([\s\S]*?)\r?\n```$/i.exec(trimmed);
+  return (fenced?.[1] ?? trimmed).trim();
+}

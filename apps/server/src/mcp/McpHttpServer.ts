@@ -88,6 +88,8 @@ import {
   DeviceStandardToolkit,
 } from "./toolkits/device/tools.ts";
 import * as HtmlHandlers from "./toolkits/html/handlers.ts";
+import * as PagesHandlers from "./toolkits/pages/handlers.ts";
+import { PagesToolkit } from "./toolkits/pages/tools.ts";
 import { MessageToolkit } from "./toolkits/message/tools.ts";
 import * as MessageHandlers from "./toolkits/message/handlers.ts";
 import { HtmlPreviewTool, HtmlPreviewToolkit, HtmlRenderToolkit } from "./toolkits/html/tools.ts";
@@ -1279,6 +1281,8 @@ const layerEnvironmentToolkit = toolkitRegistration(
   EnvironmentHandlers.layer,
 ).pipe(Layer.provide(ThreadCommandExecutor.layer));
 
+const layerPagesToolkit = toolkitRegistration(PagesToolkit, PagesHandlers.layer);
+
 const layerThemeToolkit = toolkitRegistration(ThemeToolkit, ThemeHandlers.layer).pipe(
   Layer.provide(ThreadCommandExecutor.layer),
 );
@@ -1351,6 +1355,7 @@ export const layerTools = Layer.mergeAll(
   layerProjectRegistration,
   layerEnvironmentToolkit,
   layerThemeToolkit,
+  layerPagesToolkit,
   layerPreviewControlsRegistration,
   layerWorktreeToolkitRegistration,
   layerPullRequestsToolkit,

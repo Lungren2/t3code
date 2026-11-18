@@ -1,6 +1,11 @@
 import { describe, expect, it } from "vite-plus/test";
 
-import { limitSection, sanitizeCommitSubject, sanitizeThreadTitle } from "./textGenerationUtils.ts";
+import {
+  limitSection,
+  sanitizeCommitSubject,
+  sanitizePageEditMarkdown,
+  sanitizeThreadTitle,
+} from "./textGenerationUtils.ts";
 
 describe("limitSection", () => {
   it("cuts a long section without splitting an emoji", () => {
@@ -42,5 +47,17 @@ describe("sanitizeThreadTitle", () => {
     const title = `${prefix}${character} more`;
 
     expect(sanitizeThreadTitle(title)).toBe(`${prefix}${retained}...`);
+  });
+});
+
+describe("sanitizePageEditMarkdown", () => {
+  it.each([
+    ["```markdown\n## Risks\n\n- Late\n```", "## Risks\n\n- Late"],
+    ["```\nPlain\n```", "Plain"],
+    // A reply that only contains a code block keeps it.
+    ["```ts\nconst a = 1;\n```", "```ts\nconst a = 1;\n```"],
+    ["  Text with ```inline``` fences  ", "Text with ```inline``` fences"],
+  ])("unwraps %j", (raw, expected) => {
+    expect(sanitizePageEditMarkdown(raw)).toBe(expected);
   });
 });

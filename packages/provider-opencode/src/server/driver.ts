@@ -231,6 +231,11 @@ function selectOpenCodeRuntimeTextGeneration(
         v1: v1.generateTranscriptionPostProcessing(input),
         v2: v2.generateTranscriptionPostProcessing(input),
       }),
+    generatePageEdit: (input) =>
+      byOpenCodeRuntime(resolve, {
+        v1: v1.generatePageEdit(input),
+        v2: v2.generatePageEdit(input),
+      }),
   };
 }
 

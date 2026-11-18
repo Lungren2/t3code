@@ -8,6 +8,7 @@ import { extractJsonObject } from "@t3tools/shared/schemaJson";
 import type { ProviderTextGeneration } from "./textGeneration.ts";
 import {
   buildBranchNamePrompt,
+  buildPageEditPrompt,
   buildCommitMessagePrompt,
   buildPrContentPrompt,
   buildReviewGuidePrompt,
@@ -15,6 +16,7 @@ import {
 } from "./textGenerationPrompts.ts";
 import {
   sanitizeCommitSubject,
+  sanitizePageEditMarkdown,
   sanitizePrTitle,
   sanitizeThreadTitle,
 } from "./textGenerationUtils.ts";
@@ -171,6 +173,18 @@ export function fromRunner(name: string, run: Runner): ProviderTextGeneration {
     };
   });
 
+  const generatePageEdit: ProviderTextGeneration["generatePageEdit"] = Effect.fn(
+    `${name}.generatePageEdit`,
+  )(function* (input) {
+    const generated = yield* run({
+      operation: "generatePageEdit",
+      cwd: input.cwd,
+      modelSelection: input.modelSelection,
+      ...buildPageEditPrompt(input),
+    });
+    return { markdown: sanitizePageEditMarkdown(generated.markdown) };
+  });
+
   const generateTranscriptionPostProcessing: ProviderTextGeneration["generateTranscriptionPostProcessing"] =
     Effect.fn(`${name}.generateTranscriptionPostProcessing`)(function* (input) {
       return yield* run({
@@ -196,6 +210,7 @@ export function fromRunner(name: string, run: Runner): ProviderTextGeneration {
 
   return {
     generateCommitMessage,
+    generatePageEdit,
     generatePrContent,
     generateBranchName,
     generateThreadTitle,

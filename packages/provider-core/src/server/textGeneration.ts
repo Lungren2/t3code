@@ -104,6 +104,22 @@ export type ReviewGuideGenerationResult = Omit<
   "headSha" | "generatedAt" | "modelSelection"
 >;
 
+export interface PageEditGenerationInput {
+  cwd: string;
+  instruction: string;
+  pageTitle: string;
+  /** The page body as Markdown. In insert mode it holds the cursor marker. */
+  documentMarkdown: string;
+  mode: "replace" | "insert";
+  /** The selected Markdown that replace mode rewrites. */
+  targetMarkdown?: string | undefined;
+  modelSelection: ModelSelection;
+}
+
+export interface PageEditGenerationResult {
+  markdown: string;
+}
+
 export interface TranscriptionPostProcessingInput {
   cwd: string;
   prompt: string;
@@ -122,6 +138,10 @@ export interface ProviderTextGeneration {
   readonly generateCommitMessage: (
     input: CommitMessageGenerationInput,
   ) => Effect.Effect<CommitMessageGenerationResult, TextGenerationError>;
+
+  readonly generatePageEdit: (
+    input: PageEditGenerationInput,
+  ) => Effect.Effect<PageEditGenerationResult, TextGenerationError>;
 
   readonly generatePrContent: (
     input: PrContentGenerationInput,

@@ -77,6 +77,9 @@ export type T3McpToolSummaryAction =
   | "list-thread-issues"
   | "browser"
   | "device"
+  | "page-list"
+  | "page-read"
+  | "page-write"
   | "html-preview"
   | "html-render"
   | "send-to-user";
@@ -394,6 +397,9 @@ const T3_MCP_TOOLS: Readonly<Record<string, T3McpToolDefinition>> = {
     "attachment-discard",
   ),
   t3_thread_send_attachments: tool(["Send", "Sending", "Sent", "attachments"], "attachment-send"),
+  t3_page_list: tool(["List", "Listing", "Listed", "pages"], "page-list"),
+  t3_page_read: tool(["Read", "Reading", "Read", "a page"], "page-read"),
+  t3_page_write: tool(["Write", "Writing", "Wrote", "a page"], "page-write"),
   html_preview: tool(["Preview", "Previewing", "Previewed", "an HTML page"], "html-preview"),
   html_render: tool(["Render", "Rendering", "Rendered", "an HTML page"], "html-render"),
   send_to_user: tool(["Send", "Sending", "Sent", "a message"], "send-to-user"),

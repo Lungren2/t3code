@@ -30,11 +30,13 @@ import {
 import {
   buildBranchNamePrompt,
   buildCommitMessagePrompt,
+  buildPageEditPrompt,
   buildPrContentPrompt,
   buildThreadTitlePrompt,
 } from "@t3tools/provider-core/server/textGenerationPrompts";
 import {
   sanitizeCommitSubject,
+  sanitizePageEditMarkdown,
   sanitizePrTitle,
   toJsonSchemaObject,
 } from "@t3tools/provider-core/server/textGenerationUtils";
@@ -359,6 +361,16 @@ export const makeMuseTextGeneration = Effect.fn("makeMuseTextGeneration")(functi
         modelSelection: input.modelSelection,
       });
     });
+  const generatePageEdit: ProviderTextGeneration["generatePageEdit"] = Effect.fn(
+    "MuseTextGeneration.generatePageEdit",
+  )(function* (input) {
+    const generated = yield* runMuseJson({
+      operation: "generatePageEdit",
+      ...buildPageEditPrompt(input),
+      modelSelection: input.modelSelection,
+    });
+    return { markdown: sanitizePageEditMarkdown(generated.markdown) };
+  });
   const generateReviewGuide: ProviderTextGeneration["generateReviewGuide"] = () =>
     Effect.fail(investigationUnsupported("generateReviewGuide", "Muse Code"));
   return {
@@ -368,5 +380,6 @@ export const makeMuseTextGeneration = Effect.fn("makeMuseTextGeneration")(functi
     generateThreadTitle,
     generateReviewGuide,
     generateTranscriptionPostProcessing,
+    generatePageEdit,
   } satisfies ProviderTextGeneration;
 });

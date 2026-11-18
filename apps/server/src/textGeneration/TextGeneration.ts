@@ -47,7 +47,8 @@ type TextGenerationOp =
   | "generateBranchName"
   | "generateThreadTitle"
   | "generateReviewGuide"
-  | "generateTranscriptionPostProcessing";
+  | "generateTranscriptionPostProcessing"
+  | "generatePageEdit";
 
 const resolveInstance = (
   registry: ProviderInstanceRegistry.ProviderInstanceRegistry["Service"],
@@ -190,6 +191,11 @@ export const make = Effect.gen(function* () {
         input.modelSelection,
         input.projectId,
         (service, modelSelection) => service.generateReviewGuide({ ...input, modelSelection }),
+      );
+    }),
+    generatePageEdit: Effect.fn("TextGeneration.generatePageEdit")(function (input) {
+      return generate("generatePageEdit", input.modelSelection, null, (service, modelSelection) =>
+        service.generatePageEdit({ ...input, modelSelection }),
       );
     }),
     generateTranscriptionPostProcessing: Effect.fn(

@@ -174,6 +174,19 @@ export function resolveSpeechPostProcessingModelSelection(
     : settings.textGenerationModelSelection;
 }
 
+/** Page edits follow the text generation model unless the page editor picked a usable one. */
+export function resolvePagesModelSelection(
+  settings: ServerSettings,
+  providers?: ReadonlyArray<ServerProvider>,
+): ModelSelection {
+  const selection = settings.pagesModelSelection;
+  return selection &&
+    isModelSelectionProviderEnabled(settings, selection) &&
+    isTextGenerationTargetUsable(settings, providers, selection.instanceId)
+    ? selection
+    : settings.textGenerationModelSelection;
+}
+
 export interface PersistedServerObservabilitySettings {
   readonly otlpTracesUrl: string | undefined;
   readonly otlpMetricsUrl: string | undefined;
@@ -608,6 +621,9 @@ export function applyServerSettingsPatch(
       : {}),
     ...(patch.speechPostProcessingModelSelection !== undefined
       ? { speechPostProcessingModelSelection: patch.speechPostProcessingModelSelection }
+      : {}),
+    ...(patch.pagesModelSelection !== undefined
+      ? { pagesModelSelection: patch.pagesModelSelection }
       : {}),
     ...(patch.defaultProjectScripts !== undefined
       ? { defaultProjectScripts: patch.defaultProjectScripts }

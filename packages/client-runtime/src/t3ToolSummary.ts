@@ -500,6 +500,15 @@ export function summarizeT3ToolCalls(
     case "device":
       label = phrase("Used", "use", `device controls ${times}`);
       break;
+    case "page-list":
+      label = phrase("Listed", "list", `pages ${times}`);
+      break;
+    case "page-read":
+      label = phrase("Read", "read", quantity(countEntities(entityIds("id")), "page"));
+      break;
+    case "page-write":
+      label = phrase("Wrote", "write", quantity(countEntities(entityIds("id")), "page"));
+      break;
     case "html-preview":
       label = phrase("Previewed", "preview", quantity(selected.length, "HTML page"));
       break;

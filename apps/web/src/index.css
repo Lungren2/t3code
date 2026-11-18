@@ -2549,17 +2549,20 @@ code {
    builds the <li> imperatively with only a data-checked attribute (no
    data-type), so items are targeted that way. Indentation comes from list
    nesting (two spaces per level from Tab), matching the stored Markdown. */
-.composer-tiptap ul[data-type="taskList"] {
+.composer-tiptap ul[data-type="taskList"],
+.page-editor ul[data-type="taskList"] {
   list-style: none;
   margin: 0;
   padding: 0;
 }
 
-.composer-tiptap ul[data-type="taskList"] ul[data-type="taskList"] {
+.composer-tiptap ul[data-type="taskList"] ul[data-type="taskList"],
+.page-editor ul[data-type="taskList"] ul[data-type="taskList"] {
   padding-inline-start: 1.375rem;
 }
 
-.composer-tiptap li[data-checked] {
+.composer-tiptap li[data-checked],
+.page-editor li[data-checked] {
   display: flex;
   align-items: flex-start;
   gap: 0.5rem;
@@ -2567,7 +2570,8 @@ code {
   padding: 0;
 }
 
-.composer-tiptap li[data-checked] > label {
+.composer-tiptap li[data-checked] > label,
+.page-editor li[data-checked] > label {
   display: flex;
   align-items: center;
   flex: none;
@@ -2575,7 +2579,8 @@ code {
   cursor: pointer;
 }
 
-.composer-tiptap li[data-checked] > label input[type="checkbox"] {
+.composer-tiptap li[data-checked] > label input[type="checkbox"],
+.page-editor li[data-checked] > label input[type="checkbox"] {
   display: block;
   margin: 0;
   width: 0.95rem;
@@ -2583,12 +2588,14 @@ code {
   cursor: pointer;
 }
 
-.composer-tiptap li[data-checked] > div {
+.composer-tiptap li[data-checked] > div,
+.page-editor li[data-checked] > div {
   flex: 1 1 auto;
   min-width: 0;
 }
 
-.composer-tiptap li[data-checked] > div > p {
+.composer-tiptap li[data-checked] > div > p,
+.page-editor li[data-checked] > div > p {
   margin: 0;
 }
 
@@ -2648,4 +2655,74 @@ code {
 
 .messages-timeline-scroll:focus-visible {
   outline: none;
+}
+
+/* Pages: a document editor built on the chat's Markdown typography. */
+.page-editor .ProseMirror {
+  outline: none;
+  font-size: 0.9375rem;
+  line-height: 1.65;
+}
+
+.page-editor .ProseMirror > * + * {
+  margin-top: 0.6rem;
+}
+
+.page-editor li[data-checked="true"] > div {
+  color: var(--muted-foreground);
+  text-decoration: line-through;
+}
+
+/* Tiptap marks only the empty block holding the caret, so one hint shows at a time. */
+.page-editor .ProseMirror .is-empty::before {
+  content: attr(data-placeholder);
+  float: left;
+  height: 0;
+  color: var(--contrast-placeholder);
+  pointer-events: none;
+}
+
+.page-editor table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+.page-editor :is(th, td) {
+  position: relative;
+  border: 1px solid var(--border);
+  padding: 0.35rem 0.6rem;
+  vertical-align: top;
+}
+
+.page-editor th {
+  background: color-mix(in oklab, var(--muted) 60%, transparent);
+  font-weight: 600;
+  text-align: start;
+}
+
+.page-editor :is(th, td) > p {
+  margin: 0;
+}
+
+.page-editor .selectedCell::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: color-mix(in oklab, var(--primary) 12%, transparent);
+  pointer-events: none;
+}
+
+.page-editor hr {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 1.25rem 0;
+}
+
+.page-editor hr.ProseMirror-selectednode {
+  border-top-color: var(--primary);
+}
+
+.page-editor a {
+  cursor: text;
 }

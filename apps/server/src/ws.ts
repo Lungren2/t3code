@@ -125,6 +125,7 @@ import * as ThreadLaunchService from "./orchestration-v2/ThreadLaunchService.ts"
 import * as ThreadMessageIntake from "./orchestration-v2/ThreadMessageIntake.ts";
 import * as DocumentText from "./provider/DocumentText.ts";
 import * as ScheduledTasks from "./scheduledTasks/ScheduledTaskService.ts";
+import * as Pages from "./pages/PageService.ts";
 import * as SecretRequests from "./secrets/SecretRequests.ts";
 import * as GuestShareService from "./guest/GuestShareService.ts";
 import {
@@ -1480,6 +1481,7 @@ export const layerWsRpc = (
       const commandOutputHub = yield* CommandOutputHub.CommandOutputHub;
       const providerSessionManager = yield* ProviderSessionManager.ProviderSessionManagerV2;
       const scheduledTasks = yield* ScheduledTasks.ScheduledTaskService;
+      const pages = yield* Pages.PageService;
       const secretRequests = yield* SecretRequests.SecretRequests;
       const guestShares = yield* GuestShareService.GuestShareService;
       const pullRequests = yield* PullRequestService.PullRequestService;
@@ -2324,6 +2326,18 @@ export const layerWsRpc = (
           ),
         [ORCHESTRATION_V2_WS_METHODS.subscribePromptSuggestion]: (input) =>
           providerSessionManager.subscribePromptSuggestion(input.threadId),
+        [WS_METHODS.pagesSubscribe]: (_input) => pages.subscribe(),
+        [WS_METHODS.pagesGet]: (input) =>
+          pages.get(input.id).pipe(Effect.map((page) => ({ page }))),
+        [WS_METHODS.pagesCreate]: (input) =>
+          pages.create(input).pipe(Effect.map((page) => ({ page }))),
+        [WS_METHODS.pagesUpdate]: (input) =>
+          pages.update(input).pipe(Effect.map((page) => ({ page }))),
+        [WS_METHODS.pagesMove]: (input) => pages.move(input).pipe(Effect.map((page) => ({ page }))),
+        [WS_METHODS.pagesDelete]: (input) => pages.remove(input.id),
+        [WS_METHODS.pagesRestore]: (input) =>
+          pages.restore(input.id).pipe(Effect.map((page) => ({ page }))),
+        [WS_METHODS.pagesGenerateEdit]: (input) => pages.generateEdit(input),
         [WS_METHODS.scheduledTasksSubscribe]: (_input) =>
           scheduledTasks.subscribeList().pipe(Stream.map(withVisibleWebhookUrls)),
         [WS_METHODS.scheduledTasksUpsert]: (input) => scheduledTasks.upsert(input),
@@ -3603,6 +3617,7 @@ export const layer = Layer.unwrap(
     const issues = yield* IssueService.IssueService;
     const issueTrackers = yield* IssueTrackerConnections.IssueTrackerConnections;
     const reviewGuides = yield* PullRequestReviewGuideService.PullRequestReviewGuideService;
+    const pagesService = yield* Pages.PageService;
     const peerLinks = yield* PeerLinks.PeerLinks;
     const peerLinkRequests = yield* PeerLinkRequests.PeerLinkRequests;
     const sql = yield* SqlClient.SqlClient;
@@ -3702,6 +3717,8 @@ export const layer = Layer.unwrap(
                   reviewGuides,
                 ),
               ),
+              // One service for every connection, so all clients share one change feed.
+              Layer.provide(Layer.succeed(Pages.PageService, pagesService)),
               Layer.provide(Layer.succeed(PeerLinks.PeerLinks, peerLinks)),
               Layer.provide(Layer.succeed(PeerLinkRequests.PeerLinkRequests, peerLinkRequests)),
               Layer.provide(
