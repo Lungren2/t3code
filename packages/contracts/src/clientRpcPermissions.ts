@@ -84,6 +84,8 @@ export const CLIENT_GUARDED_RPC_SCOPES = {
   [WS_METHODS.pagesRestore]: AuthOrchestrationOperateScope,
   // Runs a model on this environment's provider credentials.
   [WS_METHODS.pagesGenerateEdit]: AuthOrchestrationOperateScope,
+  // Starts an agent thread on this environment.
+  [WS_METHODS.pagesAskInThread]: AuthOrchestrationOperateScope,
   [ORCHESTRATION_V2_WS_METHODS.stopWorkflow]: AuthOrchestrationOperateScope,
   // Force stop kills agent processes, as Stop on a terminal does.
   [ORCHESTRATION_V2_WS_METHODS.forceStopThread]: AuthOrchestrationOperateScope,

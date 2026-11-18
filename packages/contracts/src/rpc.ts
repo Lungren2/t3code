@@ -411,6 +411,8 @@ import {
   ScheduledTaskMutationResult,
 } from "./scheduledTask.ts";
 import {
+  PageAskInThreadInput,
+  PageAskInThreadResult,
   PageCreateInput,
   PageDeleteInput,
   PageDeleteResult,
@@ -611,6 +613,7 @@ export const WS_METHODS = {
   pagesDelete: "pages.delete",
   pagesRestore: "pages.restore",
   pagesGenerateEdit: "pages.generateEdit",
+  pagesAskInThread: "pages.askInThread",
 
   cloudGetRelayClientStatus: "cloud.getRelayClientStatus",
   cloudInstallRelayClient: "cloud.installRelayClient",
@@ -2227,6 +2230,12 @@ const WsPagesRestoreRpc = Rpc.make(WS_METHODS.pagesRestore, {
   error: PageRpcError,
 });
 
+const WsPagesAskInThreadRpc = Rpc.make(WS_METHODS.pagesAskInThread, {
+  payload: PageAskInThreadInput,
+  success: PageAskInThreadResult,
+  error: PageRpcError,
+});
+
 const WsPagesGenerateEditRpc = Rpc.make(WS_METHODS.pagesGenerateEdit, {
   payload: PageGenerateEditInput,
   success: PageGenerateEditResult,
@@ -2404,6 +2413,7 @@ export const WsRpcGroup = RpcGroup.make(
   WsPagesDeleteRpc,
   WsPagesRestoreRpc,
   WsPagesGenerateEditRpc,
+  WsPagesAskInThreadRpc,
   WsScheduledTasksSubscribeRpc,
   WsScheduledTasksUpsertRpc,
   WsScheduledTasksSetEnabledRpc,

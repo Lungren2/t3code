@@ -29,6 +29,7 @@ import { Button } from "../ui/button";
 import { Skeleton } from "../ui/skeleton";
 import { toastManager } from "../ui/toast";
 import { PageAskAi, type PageAskAiRequest } from "./PageAskAi";
+import { PageAskInThread } from "./PageAskInThread";
 import { PageSelectionToolbar } from "./PageSelectionToolbar";
 import { PageSlashMenu } from "./PageSlashMenu";
 import { SlashMenuStore, pageSlashCommand } from "./pageSlashCommands";
@@ -404,7 +405,13 @@ function LoadedPageEditor({
         }}
         className="w-full resize-none bg-transparent font-semibold text-3xl leading-tight tracking-tight outline-none placeholder:text-muted-foreground/50 [field-sizing:content]"
       />
-      <SaveStatus status={status} />
+      <div className="flex min-h-7 items-center gap-2">
+        <SaveStatus status={status} />
+        <div className="min-w-0 flex-1" />
+        {canEdit ? (
+          <PageAskInThread environmentId={environmentId} pageId={page.id} flushPage={save} />
+        ) : null}
+      </div>
       <EditorContent editor={editor} className="page-editor min-h-[50vh]" />
       {editor !== null && canEdit && askAi === null ? (
         <>

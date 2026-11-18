@@ -9,6 +9,7 @@ import {
   GuestMessageId,
   GuestShareId,
   NonNegativeInt,
+  PageId,
   PositiveInt,
   ThreadId,
   TrimmedNonEmptyString,
@@ -30,6 +31,7 @@ export const COMPOSER_CONTEXT_KINDS = [
   "thread",
   "environment",
   "response",
+  "page",
 ] as const;
 export type KnownComposerContextKind = (typeof COMPOSER_CONTEXT_KINDS)[number];
 
@@ -254,6 +256,21 @@ export const ResponseContextRecord = Schema.Struct({
 });
 export type ResponseContextRecord = typeof ResponseContextRecord.Type;
 
+export const COMPOSER_CONTEXT_PAGE_MAX_CHARS = 200_000;
+
+/**
+ * A page from Pages, attached so the agent reads it. Its Markdown travels as it was when the
+ * message was sent; the agent edits the live page with t3_page_read and t3_page_write.
+ */
+export const PageContextRecord = Schema.Struct({
+  ...recordBase,
+  kind: Schema.Literal("page"),
+  pageId: PageId,
+  title: ContextLabel,
+  markdown: BoundedString(COMPOSER_CONTEXT_PAGE_MAX_CHARS),
+});
+export type PageContextRecord = typeof PageContextRecord.Type;
+
 const isJson = Schema.is(Schema.Json);
 
 /** Excludes known discriminators so malformed known records fail their own schema. */
@@ -286,6 +303,7 @@ export const KnownComposerContextRecord = Schema.Union([
   ThreadContextRecord,
   EnvironmentContextRecord,
   ResponseContextRecord,
+  PageContextRecord,
 ]);
 export type KnownComposerContextRecord = typeof KnownComposerContextRecord.Type;
 

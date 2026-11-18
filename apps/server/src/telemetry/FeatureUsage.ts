@@ -69,6 +69,7 @@ const METHOD_FEATURES: Readonly<Record<string, (payload: Payload) => FeatureUsag
   [WS_METHODS.scheduledTasksRunNow]: () => ({ feature: "scheduled_task.run_now" }),
   [WS_METHODS.pagesCreate]: () => ({ feature: "page.create" }),
   [WS_METHODS.pagesGenerateEdit]: () => ({ feature: "page.generate_edit" }),
+  [WS_METHODS.pagesAskInThread]: () => ({ feature: "page.ask_in_thread" }),
   [WS_METHODS.agentSessionsImport]: () => ({ feature: "agent_session.import" }),
   [WS_METHODS.projectCloneStart]: () => ({ feature: "project.clone" }),
   [WS_METHODS.sourceControlPublishRepository]: () => ({ feature: "repository.publish" }),

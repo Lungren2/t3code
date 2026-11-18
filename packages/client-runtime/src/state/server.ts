@@ -1825,6 +1825,10 @@ export function createServerEnvironmentAtoms<R, E>(
       label: "environment-data:server:page:restore",
       tag: WS_METHODS.pagesRestore,
     }),
+    askPageInThread: createEnvironmentRpcCommand(runtime, {
+      label: "environment-data:server:page:ask-in-thread",
+      tag: WS_METHODS.pagesAskInThread,
+    }),
     generatePageEdit: createEnvironmentRpcCommand(runtime, {
       label: "environment-data:server:page:generate-edit",
       tag: WS_METHODS.pagesGenerateEdit,

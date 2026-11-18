@@ -1,3 +1,4 @@
+import { PageContextChip } from "../PageContextChip";
 import { useNativeFileDrag } from "../../useNativeFileDrag";
 import { resolvePathLinkTarget } from "@t3tools/shared/fileLinks";
 import { documentChipKindForFileName } from "~/pierre-icons";
@@ -341,6 +342,16 @@ const userMessageContextPresentationRegistry = createContextPresentationRegistry
             leading={context.reference.leading ?? false}
             trailing={context.reference.trailing ?? false}
           />
+        ) : (
+          <UnavailableUserMessageContextChip {...context} />
+        ),
+    },
+    {
+      kind: "page",
+      canRender: (record) => record.kind === "page",
+      render: (record, context) =>
+        record.kind === "page" ? (
+          <PageContextChip record={record} copyMarkdown={context.copyMarkdown} />
         ) : (
           <UnavailableUserMessageContextChip {...context} />
         ),

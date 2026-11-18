@@ -118,6 +118,14 @@ const knownRecords: Record<(typeof COMPOSER_CONTEXT_KINDS)[number], Record<strin
     label: "vps",
     environmentId: "environment-vps",
   },
+  page: {
+    ...base,
+    kind: "page",
+    label: "Launch plan",
+    pageId: "page:launch-plan",
+    title: "Launch plan",
+    markdown: "## Goals\n\n- Ship it",
+  },
   response: {
     ...base,
     kind: "response",

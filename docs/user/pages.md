@@ -1,6 +1,6 @@
 # Pages
 
-Pages are documents you and your agents write together: notes, plans, specs. Open them from **Pages** in the sidebar footer, or press `Mod+Alt+P` (or choose **New page** in the command palette) to start one. Pages live on the T3 Code server you are connected to, so every device connected to it sees the same pages, and edits save as you type.
+Pages are documents you and your agents write together: notes, plans, specs. Open them from **Pages** in the slim bar at the left edge of the sidebar (**Home** takes you back to your threads), or press `Mod+Alt+P` (or choose **New page** in the command palette) to start one. Pages live on the T3 Code server you are connected to, so every device connected to it sees the same pages, and edits save as you type.
 
 Type `/` for blocks: headings, bulleted, numbered and to-do lists, quotes, code, dividers and tables. Markdown shortcuts such as `## ` and `- ` work too. Select text for bold, italic, strikethrough, code and links. Use **+** beside a page in the list to add a page inside it, and the **…** menu to reorder, nest, move out a level, or delete. A deleted page and its subpages can be brought back with **Undo**; deleted pages are removed for good after 30 days.
 
@@ -9,6 +9,10 @@ Type `/` for blocks: headings, bulleted, numbered and to-do lists, quotes, code,
 Select text and choose **Ask AI**, or put the cursor where you want new writing and press `Mod+J` or type `/ask`. Describe the change, or pick a quick action such as **Improve writing** or **Continue writing**. The answer appears as a suggestion; choose **Replace** or **Insert** to keep it, **Try again**, or **Discard**. Undo works on an accepted suggestion like any edit.
 
 Ask AI uses any model that can generate text, including text generators you set up in Settings. The model you pick in the Ask AI panel is remembered for the whole environment; until you pick one, it follows your text generation model.
+
+## Ask in a thread
+
+**Ask in a thread** (above the page body) starts an agent thread with the page attached. Say what you want, such as "review this plan and fill in the open questions". The thread uses the model a new chat starts with, and the agent reads the page as it was when you asked. It can also edit the page, and you see the changes live. Open the page again from the page chip in the thread.
 
 ## Agents and pages
 

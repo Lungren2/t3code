@@ -1,3 +1,4 @@
+import { SidebarNavRail } from "./sidebar/SidebarNavRail";
 import { useAtomValue } from "@effect/atom-react";
 import * as Schema from "effect/Schema";
 import {
@@ -486,7 +487,12 @@ export function AppSidebarLayout({
               }}
               style={windowControlsInsetStyle}
             >
-              <ThreadSidebar routeReveal={sidebarRouteReveal} />
+              <div className="flex min-h-0 flex-1">
+                <SidebarNavRail />
+                <div className="flex min-h-0 min-w-0 flex-1 flex-col">
+                  <ThreadSidebar routeReveal={sidebarRouteReveal} />
+                </div>
+              </div>
               <SidebarRail onDoubleClick={resetSidebarWidth} />
             </Sidebar>
           </>

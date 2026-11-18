@@ -56,6 +56,10 @@ const DEFINITIONS = [
     kind: "response",
     capabilities: { details: "none", expanded: "inline-block", defaultDraftView: "compact" },
   },
+  {
+    kind: "page",
+    capabilities: { details: "tooltip", expanded: "none", defaultDraftView: "compact" },
+  },
 ] as const satisfies ReadonlyArray<ContextPresentationDefinition>;
 
 function buildDefinitionRegistry(

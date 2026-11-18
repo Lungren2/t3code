@@ -113,6 +113,7 @@ const RPC_AGGREGATES = {
   [WS_METHODS.pagesDelete]: "pages",
   [WS_METHODS.pagesRestore]: "pages",
   [WS_METHODS.pagesGenerateEdit]: "pages",
+  [WS_METHODS.pagesAskInThread]: "pages",
   [WS_METHODS.secretsAnswerRequest]: "secrets",
   [WS_METHODS.guestShareCreate]: "guest-share",
   [WS_METHODS.cloudGetRelayClientStatus]: "cloud",

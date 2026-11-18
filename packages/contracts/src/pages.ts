@@ -5,6 +5,7 @@ import {
   IsoDateTime,
   NonNegativeInt,
   PageId,
+  ThreadId,
   TrimmedNonEmptyString,
 } from "./baseSchemas.ts";
 import { ModelSelection } from "./modelSelection.ts";
@@ -115,6 +116,18 @@ export const PageGenerateEditResult = Schema.Struct({
   markdown: Schema.String,
 });
 export type PageGenerateEditResult = typeof PageGenerateEditResult.Type;
+
+export const PageAskInThreadInput = Schema.Struct({
+  id: PageId,
+  /** What to ask; the page itself travels as a context record on the message. */
+  prompt: TrimmedNonEmptyString.check(Schema.isMaxLength(PAGE_INSTRUCTION_MAX_LENGTH)),
+  /** Omitted: the model a new chat starts with. */
+  modelSelection: Schema.optional(ModelSelection),
+});
+export type PageAskInThreadInput = typeof PageAskInThreadInput.Type;
+
+export const PageAskInThreadResult = Schema.Struct({ threadId: ThreadId });
+export type PageAskInThreadResult = typeof PageAskInThreadResult.Type;
 
 export class PageNotFoundError extends Schema.TaggedError<PageNotFoundError>()(
   "PageNotFoundError",

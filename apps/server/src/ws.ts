@@ -126,6 +126,7 @@ import * as ThreadMessageIntake from "./orchestration-v2/ThreadMessageIntake.ts"
 import * as DocumentText from "./provider/DocumentText.ts";
 import * as ScheduledTasks from "./scheduledTasks/ScheduledTaskService.ts";
 import * as Pages from "./pages/PageService.ts";
+import * as PageThreads from "./pages/PageThreadService.ts";
 import * as SecretRequests from "./secrets/SecretRequests.ts";
 import * as GuestShareService from "./guest/GuestShareService.ts";
 import {
@@ -1482,6 +1483,7 @@ export const layerWsRpc = (
       const providerSessionManager = yield* ProviderSessionManager.ProviderSessionManagerV2;
       const scheduledTasks = yield* ScheduledTasks.ScheduledTaskService;
       const pages = yield* Pages.PageService;
+      const pageThreads = yield* PageThreads.PageThreadService;
       const secretRequests = yield* SecretRequests.SecretRequests;
       const guestShares = yield* GuestShareService.GuestShareService;
       const pullRequests = yield* PullRequestService.PullRequestService;
@@ -2338,6 +2340,7 @@ export const layerWsRpc = (
         [WS_METHODS.pagesRestore]: (input) =>
           pages.restore(input.id).pipe(Effect.map((page) => ({ page }))),
         [WS_METHODS.pagesGenerateEdit]: (input) => pages.generateEdit(input),
+        [WS_METHODS.pagesAskInThread]: (input) => pageThreads.askInThread(input),
         [WS_METHODS.scheduledTasksSubscribe]: (_input) =>
           scheduledTasks.subscribeList().pipe(Stream.map(withVisibleWebhookUrls)),
         [WS_METHODS.scheduledTasksUpsert]: (input) => scheduledTasks.upsert(input),
@@ -3618,6 +3621,7 @@ export const layer = Layer.unwrap(
     const issueTrackers = yield* IssueTrackerConnections.IssueTrackerConnections;
     const reviewGuides = yield* PullRequestReviewGuideService.PullRequestReviewGuideService;
     const pagesService = yield* Pages.PageService;
+    const pageThreadService = yield* PageThreads.PageThreadService;
     const peerLinks = yield* PeerLinks.PeerLinks;
     const peerLinkRequests = yield* PeerLinkRequests.PeerLinkRequests;
     const sql = yield* SqlClient.SqlClient;
@@ -3719,6 +3723,7 @@ export const layer = Layer.unwrap(
               ),
               // One service for every connection, so all clients share one change feed.
               Layer.provide(Layer.succeed(Pages.PageService, pagesService)),
+              Layer.provide(Layer.succeed(PageThreads.PageThreadService, pageThreadService)),
               Layer.provide(Layer.succeed(PeerLinks.PeerLinks, peerLinks)),
               Layer.provide(Layer.succeed(PeerLinkRequests.PeerLinkRequests, peerLinkRequests)),
               Layer.provide(
