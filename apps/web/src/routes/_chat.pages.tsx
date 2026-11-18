@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 
-import { PagesPage, type PagesSearch } from "../components/pages/PagesPage";
+import { PagesPage } from "../components/pages/PagesPage";
+import type { PagesSearch } from "../components/pages/usePagesWorkspace";
 
 export const Route = createFileRoute("/_chat/pages")({
   validateSearch: (raw: Record<string, unknown>): PagesSearch => ({

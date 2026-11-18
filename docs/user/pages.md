@@ -1,6 +1,6 @@
 # Pages
 
-Pages are documents you and your agents write together: notes, plans, specs. Open them from **Pages** in the slim bar at the left edge of the sidebar (**Home** takes you back to your threads), or press `Mod+Alt+P` (or choose **New page** in the command palette) to start one. Pages live on the T3 Code server you are connected to, so every device connected to it sees the same pages, and edits save as you type.
+Pages are documents you and your agents write together: notes, plans, specs. Open them from **Pages** in the slim bar at the left edge of the sidebar; the sidebar then lists your pages instead of threads, and **Home** brings the threads back. To start one, press `Mod+Alt+P` or choose **New page** in the command palette. Pages live on the T3 Code server you are connected to, so every device connected to it sees the same pages, and edits save as you type.
 
 Type `/` for blocks: headings, bulleted, numbered and to-do lists, quotes, code, dividers and tables. Markdown shortcuts such as `## ` and `- ` work too. Select text for bold, italic, strikethrough, code and links. Use **+** beside a page in the list to add a page inside it, and the **…** menu to reorder, nest, move out a level, or delete. A deleted page and its subpages can be brought back with **Undo**; deleted pages are removed for good after 30 days.
 

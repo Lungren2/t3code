@@ -1,3 +1,4 @@
+import { PagesSidebar } from "./pages/PagesSidebar";
 import { SidebarNavRail } from "./sidebar/SidebarNavRail";
 import { useAtomValue } from "@effect/atom-react";
 import * as Schema from "effect/Schema";
@@ -489,9 +490,20 @@ export function AppSidebarLayout({
             >
               <div className="flex min-h-0 flex-1">
                 <SidebarNavRail />
-                <div className="flex min-h-0 min-w-0 flex-1 flex-col">
+                {/* The thread list stays mounted under Pages, so going Home is instant. */}
+                <div
+                  className={cn(
+                    "min-h-0 min-w-0 flex-1 flex-col",
+                    pathname === "/pages" ? "hidden" : "flex",
+                  )}
+                >
                   <ThreadSidebar routeReveal={sidebarRouteReveal} />
                 </div>
+                {pathname === "/pages" ? (
+                  <div className="flex min-h-0 min-w-0 flex-1 flex-col">
+                    <PagesSidebar />
+                  </div>
+                ) : null}
               </div>
               <SidebarRail onDoubleClick={resetSidebarWidth} />
             </Sidebar>
