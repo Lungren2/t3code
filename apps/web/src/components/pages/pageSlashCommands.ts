@@ -41,9 +41,14 @@ const PAGE_BLOCKS: ReadonlyArray<PageBlock> = [
 function filterPageBlocks(query: string): ReadonlyArray<PageBlock> {
   const needle = query.trim().toLowerCase();
   if (needle === "") return PAGE_BLOCKS;
+  // Match the start of a word, so "t" finds Text, To-do and Table but not Heading.
   return PAGE_BLOCKS.filter(
     (block) =>
-      block.label.toLowerCase().includes(needle) ||
+      block.label
+        .toLowerCase()
+        .split(/[\s-]+/)
+        .some((word) => word.startsWith(needle)) ||
+      block.label.toLowerCase().startsWith(needle) ||
       block.keywords.some((keyword) => keyword.startsWith(needle)),
   );
 }

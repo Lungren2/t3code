@@ -406,7 +406,7 @@ function LoadedPageEditor({
       />
       <SaveStatus status={status} />
       <EditorContent editor={editor} className="page-editor min-h-[50vh]" />
-      {editor !== null && canEdit ? (
+      {editor !== null && canEdit && askAi === null ? (
         <>
           <PageSlashMenuHost store={slashMenu} />
           <PageSelectionToolbar editor={editor} onAskAi={() => slashMenu.requestAskAi()} />
