@@ -90,7 +90,7 @@ export function validateScheduledTasksSearch(raw: Record<string, unknown>) {
 }
 
 export type ScheduleMode = "fixed" | "once" | "interval" | "webhook";
-export type WorkspaceMode = "root" | "worktree" | "existing_worktree";
+export type WorkspaceMode = "root" | "worktree" | "existing_worktree" | "den_session";
 
 export interface DraftState {
   readonly editingId: string | null;

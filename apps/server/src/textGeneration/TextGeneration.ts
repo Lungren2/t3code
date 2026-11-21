@@ -13,6 +13,7 @@ import { fallbackTextGenerationModelSelection } from "@t3tools/shared/serverSett
 import * as ServerSettings from "../serverSettings.ts";
 import type { ProviderTextGeneration } from "@t3tools/provider-core/server/textGeneration";
 import { TextGenerationError } from "@t3tools/contracts";
+import { denSessionForPath, outsideDenSession } from "@t3tools/shared/denSession";
 
 import * as ProviderInstallationGate from "../provider/ProviderInstallationGate.ts";
 import * as ProviderInstanceRegistry from "../provider/ProviderInstanceRegistry.ts";
@@ -166,7 +167,12 @@ export const make = Effect.gen(function* () {
         "generateCommitMessage",
         input.modelSelection,
         input.projectId,
-        (service, modelSelection) => service.generateCommitMessage({ ...input, modelSelection }),
+        (service, modelSelection) =>
+          service.generateCommitMessage({
+            ...input,
+            cwd: outsideDenSession(input.cwd),
+            modelSelection,
+          }),
       );
     }),
     generatePrContent: Effect.fn("TextGeneration.generatePrContent")(function (input) {
@@ -174,7 +180,12 @@ export const make = Effect.gen(function* () {
         "generatePrContent",
         input.modelSelection,
         input.projectId,
-        (service, modelSelection) => service.generatePrContent({ ...input, modelSelection }),
+        (service, modelSelection) =>
+          service.generatePrContent({
+            ...input,
+            cwd: outsideDenSession(input.cwd),
+            modelSelection,
+          }),
       );
     }),
     generateBranchName: Effect.fn("TextGeneration.generateBranchName")(function (input) {
@@ -182,10 +193,24 @@ export const make = Effect.gen(function* () {
         "generateBranchName",
         input.modelSelection,
         input.projectId,
-        (service, modelSelection) => service.generateBranchName({ ...input, modelSelection }),
+        (service, modelSelection) =>
+          service.generateBranchName({
+            ...input,
+            cwd: outsideDenSession(input.cwd),
+            modelSelection,
+          }),
       );
     }),
     generateReviewGuide: Effect.fn("TextGeneration.generateReviewGuide")(function (input) {
+      // A guide's agent reads the checkout with tools, outside the sandbox.
+      if (denSessionForPath(input.cwd) !== null) {
+        return Effect.fail(
+          new TextGenerationError({
+            operation: "generateReviewGuide",
+            detail: "Review guides aren't available for session threads.",
+          }),
+        );
+      }
       return generate(
         "generateReviewGuide",
         input.modelSelection,
@@ -226,6 +251,7 @@ export const make = Effect.gen(function* () {
               ));
             return yield* textGeneration.generateThreadTitle({
               ...input,
+              cwd: outsideDenSession(input.cwd),
               linkedContext,
               modelSelection,
             });

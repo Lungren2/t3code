@@ -82,6 +82,7 @@ import {
   mcpAppToolResourceUri,
 } from "@t3tools/shared/mcpApp";
 import { AgentScope } from "@t3tools/shared/AgentScope";
+import { denSessionForPath, denSessionLaunch } from "@t3tools/shared/denSession";
 import * as ProviderProcesses from "../../process/providerProcesses.ts";
 import * as SpawnWorker from "../../process/SpawnWorker.ts";
 import * as HostProcess from "@t3tools/shared/HostProcess";
@@ -1509,16 +1510,20 @@ export const layerQueryRunner: Layer.Layer<
       };
       // The SDK can prepend a scope wrapper to native binaries; script entries run through node.
       const binaryPath = queryOptions.pathToClaudeCodeExecutable;
-      const launch =
-        binaryPath === undefined || CLAUDE_SCRIPT_EXTENSIONS.some((ext) => binaryPath.endsWith(ext))
-          ? undefined
-          : yield* agentScope.wrap({
-              command: binaryPath,
-              args: [],
-              name: "claude",
-              threadId: input.threadId,
-              env: queryOptions.env,
-            });
+      const denSession = denSessionForPath(queryOptions.cwd);
+      const launch: { command: string; args: ReadonlyArray<string>; unit?: string } | undefined =
+        denSession !== null
+          ? denSessionLaunch(denSession, binaryPath ?? "claude", [])
+          : binaryPath === undefined ||
+              CLAUDE_SCRIPT_EXTENSIONS.some((ext) => binaryPath.endsWith(ext))
+            ? undefined
+            : yield* agentScope.wrap({
+                command: binaryPath,
+                args: [],
+                name: "claude",
+                threadId: input.threadId,
+                env: queryOptions.env,
+              });
       const options =
         launch === undefined || launch.args.length === 0
           ? queryOptions

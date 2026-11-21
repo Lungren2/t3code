@@ -42,6 +42,7 @@ import {
 import { makeKeyedCoalescingWorker } from "@t3tools/shared/KeyedCoalescingWorker";
 import * as KeyedLock from "@t3tools/shared/KeyedLock";
 import { AgentScope } from "@t3tools/shared/AgentScope";
+import { denSessionForPath, denSessionLaunch } from "@t3tools/shared/denSession";
 import * as HostProcess from "@t3tools/shared/HostProcess";
 import { SpawnExecutableResolution, mergePathEntries } from "@t3tools/shared/shell";
 
@@ -2770,13 +2771,18 @@ export const makeWithOptions = Effect.fn("TerminalManager.makeWithOptions")(func
       );
     }
 
-    const launch = yield* agentScope.wrap({
-      command: executable,
-      args: candidate.args ?? [],
-      name: "terminal",
-      env: spawnEnv,
-      survivesRestart: true,
-    });
+    // A shell started in a session's folder would load what the agent left there.
+    const denSession = denSessionForPath(session.cwd);
+    const launch =
+      denSession !== null
+        ? denSessionLaunch(denSession, executable, candidate.args ?? [])
+        : yield* agentScope.wrap({
+            command: executable,
+            args: candidate.args ?? [],
+            name: "terminal",
+            env: spawnEnv,
+            survivesRestart: true,
+          });
     const attempt = yield* Effect.result(
       options.ptyAdapter.spawn({
         shell: launch.command,

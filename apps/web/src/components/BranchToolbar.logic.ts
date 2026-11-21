@@ -25,7 +25,7 @@ export interface EnvironmentOption {
 export const ADD_TO_MACHINE_LABEL_CLASS =
   "flex min-w-0 items-center gap-1.5 opacity-55 in-data-highlighted:opacity-100 in-data-popup-open:opacity-100";
 
-export const EnvMode = Schema.Literals(["local", "worktree"]);
+export const EnvMode = Schema.Literals(["local", "worktree", "session"]);
 export type EnvMode = typeof EnvMode.Type;
 
 const GENERIC_LOCAL_ENVIRONMENT_LABELS = new Set(["local", "local environment"]);
@@ -92,7 +92,12 @@ export function resolveContextStripLabelsCompact(input: {
 }
 
 export function resolveEnvModeLabel(mode: EnvMode): string {
+  if (mode === "session") return "New session";
   return mode === "worktree" ? "New worktree" : "Current checkout";
+}
+
+export function isDenSessionPath(path: string | null | undefined): boolean {
+  return path != null && /\/den\/sessions\/[^/]+\/workspace(?:\/|$)/.test(path);
 }
 
 export const WORKTREE_SUBMODULES_LABELS: Record<WorktreeSubmodules, string> = {
@@ -102,6 +107,7 @@ export const WORKTREE_SUBMODULES_LABELS: Record<WorktreeSubmodules, string> = {
 };
 
 export function resolveCurrentWorkspaceLabel(activeWorktreePath: string | null): string {
+  if (isDenSessionPath(activeWorktreePath)) return "Current session";
   return activeWorktreePath ? "Current worktree" : resolveEnvModeLabel("local");
 }
 
@@ -109,7 +115,9 @@ export function resolveLockedWorkspaceLabel(
   activeWorktreePath: string | null,
   effectiveEnvMode: EnvMode,
 ): string {
+  if (isDenSessionPath(activeWorktreePath)) return "Session";
   if (activeWorktreePath) return activeWorktreePath.split(/[\\/]/).findLast(Boolean) ?? "Worktree";
+  if (effectiveEnvMode === "session") return resolveEnvModeLabel("session");
   return effectiveEnvMode === "worktree" ? resolveEnvModeLabel("worktree") : "Local checkout";
 }
 
@@ -166,7 +174,9 @@ export function resolveEffectiveEnvMode(input: {
     if (activeWorktreePath) {
       return "local";
     }
-    return draftThreadEnvMode === "worktree" ? "worktree" : "local";
+    return draftThreadEnvMode === "worktree" || draftThreadEnvMode === "session"
+      ? draftThreadEnvMode
+      : "local";
   }
   return activeWorktreePath || preparingWorktree ? "worktree" : "local";
 }
@@ -180,6 +190,8 @@ export function resolveDraftEnvModeAfterBranchChange(input: {
   if (nextWorktreePath) {
     return "worktree";
   }
+  // Picking a branch must not quietly take a thread out of its sandbox.
+  if (effectiveEnvMode === "session") return "session";
   if (effectiveEnvMode === "worktree" && !currentWorktreePath) {
     return "worktree";
   }

@@ -163,6 +163,7 @@ const WORKSPACE_MODE_LABELS: Record<WorkspaceMode, string> = {
   worktree: "Create a new worktree",
   root: "Use the project checkout",
   existing_worktree: "Use a specific checkout",
+  den_session: "Run in a new session",
 };
 
 const EMPTY_DRAFT: DraftState = {
@@ -1527,13 +1528,15 @@ function ScheduledTaskEditorForm({
     const workspaceStrategy: OrchestrationV2ThreadLaunchWorkspaceStrategy =
       draft.workspaceMode === "root"
         ? { type: "root" }
-        : draft.workspaceMode === "existing_worktree"
-          ? { type: "existing_worktree", worktreePath: draft.existingWorktreePath.trim() }
-          : {
-              type: "worktree",
-              baseRef: draft.baseRef.trim() || "main",
-              startFromOrigin: draft.startFromOrigin,
-            };
+        : draft.workspaceMode === "den_session"
+          ? { type: "den_session" }
+          : draft.workspaceMode === "existing_worktree"
+            ? { type: "existing_worktree", worktreePath: draft.existingWorktreePath.trim() }
+            : {
+                type: "worktree",
+                baseRef: draft.baseRef.trim() || "main",
+                startFromOrigin: draft.startFromOrigin,
+              };
     const input: ScheduledTaskUpsertInput = {
       ...(draft.editingId ? { id: draft.editingId as ScheduledTaskId, requireExisting: true } : {}),
       title: draft.title.trim(),
@@ -1735,6 +1738,7 @@ function ScheduledTaskEditorForm({
                   <SelectItem value="worktree">Create a new worktree</SelectItem>
                   <SelectItem value="root">Use the project checkout</SelectItem>
                   <SelectItem value="existing_worktree">Use a specific checkout</SelectItem>
+                  <SelectItem value="den_session">Run in a new session</SelectItem>
                 </SelectPopup>
               </Select>
             </Field>

@@ -5,7 +5,14 @@ import { stackedThreadToast, toastManager } from "./ui/toast";
 import { ComposerContextLabel } from "./ComposerContextLabel";
 import { scopeProjectRef, scopeThreadRef } from "@t3tools/client-runtime/environment";
 import type { EnvironmentId, ProjectId, ThreadId } from "@t3tools/contracts";
-import { FolderGit2Icon, FolderGitIcon, FolderIcon, PlusIcon, ScaleIcon } from "lucide-react";
+import {
+  BoxIcon,
+  FolderGit2Icon,
+  FolderGitIcon,
+  FolderIcon,
+  PlusIcon,
+  ScaleIcon,
+} from "lucide-react";
 import {
   type Ref,
   type MouseEvent as ReactMouseEvent,
@@ -411,6 +418,16 @@ const RunContextSelector = memo(function RunContextSelector({
                 <span className="min-w-0 truncate">{resolveEnvModeLabel("worktree")}</span>
               </span>
             </MenuRadioItem>
+            <MenuRadioItem
+              disabled={envModeLocked || forceNewWorktree}
+              value="session"
+              closeOnClick
+            >
+              <span className="flex min-w-0 items-center gap-1.5">
+                <BoxIcon className="size-3" />
+                <span className="min-w-0 truncate">{resolveEnvModeLabel("session")}</span>
+              </span>
+            </MenuRadioItem>
             {previousWorktreeLabel ? (
               <MenuRadioItem disabled={envModeLocked} value="previous-worktree" closeOnClick>
                 <PreviousWorktreeItemContent branch={previousWorktreeBranch} />
@@ -715,7 +732,7 @@ export const BranchToolbar = memo(function BranchToolbar({
             threadId={threadId}
             {...(draftId ? { draftId } : {})}
             envLocked={envLocked}
-            effectiveEnvModeOverride={effectiveEnvMode}
+            effectiveEnvModeOverride={effectiveEnvMode === "session" ? "local" : effectiveEnvMode}
             {...(activeThreadBranchOverride !== undefined ? { activeThreadBranchOverride } : {})}
             {...(onActiveThreadBranchOverrideChange ? { onActiveThreadBranchOverrideChange } : {})}
             startFromOrigin={startFromOrigin}
@@ -810,7 +827,7 @@ export const BranchToolbar = memo(function BranchToolbar({
           threadId={threadId}
           {...(draftId ? { draftId } : {})}
           envLocked={envLocked}
-          effectiveEnvModeOverride={effectiveEnvMode}
+          effectiveEnvModeOverride={effectiveEnvMode === "session" ? "local" : effectiveEnvMode}
           {...(activeThreadBranchOverride !== undefined ? { activeThreadBranchOverride } : {})}
           {...(onActiveThreadBranchOverrideChange ? { onActiveThreadBranchOverrideChange } : {})}
           startFromOrigin={startFromOrigin}

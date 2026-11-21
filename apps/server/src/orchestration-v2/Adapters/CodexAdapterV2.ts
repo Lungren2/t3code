@@ -46,6 +46,7 @@ import {
 } from "@t3tools/contracts";
 import { SKILL_MENTION_PATTERN } from "@t3tools/shared/composerInlineTokens";
 import { AgentScope } from "@t3tools/shared/AgentScope";
+import { denSessionForPath, denSessionLaunch } from "@t3tools/shared/denSession";
 import * as HostProcess from "@t3tools/shared/HostProcess";
 import {
   COMPUTER_USE_TOOL_SOURCE,
@@ -1583,15 +1584,18 @@ export const makeCodexAppServerSpawnCommand = Effect.fn(
   readonly env?: NodeJS.ProcessEnv | undefined;
   readonly extendEnv?: boolean | undefined;
   readonly threadId?: string | undefined;
+  readonly denSession?: string | null | undefined;
 }) {
-  const launch = yield* (yield* AgentScope).wrap({
-    command: input.command,
-    args: input.args,
-    name: "codex",
-    threadId: input.threadId,
-    env: input.env,
-    shared: true,
-  });
+  const launch = input.denSession
+    ? denSessionLaunch(input.denSession, input.command, input.args)
+    : yield* (yield* AgentScope).wrap({
+        command: input.command,
+        args: input.args,
+        name: "codex",
+        threadId: input.threadId,
+        env: input.env,
+        shared: true,
+      });
   const spawnCommand = yield* resolveSpawnCommand(launch.command, launch.args, {
     ...(input.env === undefined ? {} : { env: input.env }),
     ...(input.extendEnv === undefined ? {} : { extendEnv: input.extendEnv }),
@@ -1782,6 +1786,7 @@ export const layerAppServerClientFactory: Layer.Layer<
           ),
           env: environment,
           threadId: input.threadId,
+          denSession: denSessionForPath(input.runtimePolicy.cwd),
         }).pipe(Effect.provideService(AgentScope, agentScope));
         const handle = yield* spawner.spawn(command).pipe(
           Effect.provideService(Scope.Scope, scope),

@@ -175,6 +175,7 @@ interface StartThreadBootstrap {
     readonly branch?: string;
     readonly startFromOrigin?: boolean;
   };
+  readonly prepareDenSession?: boolean;
   readonly runSetupScript?: boolean;
 }
 
@@ -762,8 +763,9 @@ export const startThreadTurn = Effect.fn("EnvironmentCommands.startThreadTurn")(
     const existingProjection =
       bootstrap === undefined ? yield* getProjection(input.threadId) : null;
     const thread = bootstrap ?? existingProjection!.thread;
-    const workspaceStrategy =
-      prepareWorktree !== undefined
+    const workspaceStrategy = input.bootstrap?.prepareDenSession
+      ? { type: "den_session" as const }
+      : prepareWorktree !== undefined
         ? {
             type: "worktree" as const,
             baseRef: prepareWorktree.baseBranch,

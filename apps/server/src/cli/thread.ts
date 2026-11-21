@@ -703,19 +703,24 @@ export const titleFromMessage = (message: string) => {
 const launchWorkspaceStrategy = (input: {
   readonly worktree: Option.Option<string>;
   readonly branch: Option.Option<string>;
+  readonly session: boolean;
 }) =>
-  Option.match(input.worktree, {
-    onNone: () =>
-      Option.isSome(input.branch)
-        ? Effect.fail(new ThreadUsageError({ detail: "--branch needs --worktree <base-ref>." }))
-        : Effect.void,
-    onSome: (baseRef) =>
-      Effect.succeed({
-        type: "worktree" as const,
-        baseRef,
-        ...Option.match(input.branch, { onNone: () => ({}), onSome: (branch) => ({ branch }) }),
-      }),
-  });
+  input.session
+    ? Option.isSome(input.worktree) || Option.isSome(input.branch)
+      ? Effect.fail(new ThreadUsageError({ detail: "--session can't be used with a worktree." }))
+      : Effect.succeed({ type: "den_session" as const })
+    : Option.match(input.worktree, {
+        onNone: () =>
+          Option.isSome(input.branch)
+            ? Effect.fail(new ThreadUsageError({ detail: "--branch needs --worktree <base-ref>." }))
+            : Effect.void,
+        onSome: (baseRef) =>
+          Effect.succeed({
+            type: "worktree" as const,
+            baseRef,
+            ...Option.match(input.branch, { onNone: () => ({}), onSome: (branch) => ({ branch }) }),
+          }),
+      });
 
 /**
  * Options are model specific, so they need an explicit model. `true` and
@@ -847,6 +852,10 @@ const threadStartCommand = Command.make("start", {
   branch: Flag.String("branch").pipe(
     Flag.withDescription("Branch name for the new worktree."),
     Flag.optional,
+  ),
+  session: Flag.Boolean("session").pipe(
+    Flag.withDescription("Run in a new Den Den session: a sandboxed copy of the project."),
+    Flag.withDefault(false),
   ),
   wait: waitFlag,
   json: jsonFlag,

@@ -720,6 +720,11 @@ export const OrchestrationV2ThreadLaunchWorkspaceStrategy = Schema.Union([
     branch: Schema.optional(TrimmedNonEmptyString),
     startFromOrigin: Schema.optional(Schema.Boolean),
   }),
+  // A Den Den session: a sandboxed snapshot of the project.
+  Schema.Struct({
+    type: Schema.Literal("den_session"),
+    branch: Schema.optional(TrimmedNonEmptyString),
+  }),
 ]);
 export type OrchestrationV2ThreadLaunchWorkspaceStrategy =
   typeof OrchestrationV2ThreadLaunchWorkspaceStrategy.Type;

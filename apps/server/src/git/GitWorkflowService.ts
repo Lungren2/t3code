@@ -29,6 +29,8 @@ import {
   type VcsStatusResult,
 } from "@t3tools/contracts";
 
+import { denSessionForPath } from "@t3tools/shared/denSession";
+import { discardDenSession } from "../denSession.ts";
 import * as GitManager from "./GitManager.ts";
 import * as GitVcsDriver from "../vcs/GitVcsDriver.ts";
 import * as VcsDriverRegistry from "../vcs/VcsDriverRegistry.ts";
@@ -512,6 +514,20 @@ export const make = Effect.gen(function* () {
       },
     ),
     removeWorktree: Effect.fn("GitWorkflowService.removeWorktree")(function (input) {
+      const denSession = denSessionForPath(input.path);
+      if (denSession !== null) {
+        return discardDenSession(denSession).pipe(
+          Effect.mapError(
+            (cause) =>
+              new GitCommandError({
+                operation: "GitWorkflowService.removeWorktree",
+                command: "den session discard",
+                cwd: input.cwd,
+                detail: cause.message,
+              }),
+          ),
+        );
+      }
       return ensureGitCommand("GitWorkflowService.removeWorktree", input.cwd).pipe(
         Effect.andThen(git.removeWorktree(input)),
       );

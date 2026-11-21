@@ -160,6 +160,7 @@ export function handoffSettings(tool: string, args: unknown, result: unknown): F
                 "root",
                 "worktree",
                 "existing_worktree",
+                "den_session",
               ]) ?? "root"),
       });
     case "t3_thread_send":

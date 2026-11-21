@@ -1,9 +1,10 @@
 import { ComposerSelectControl } from "./chat/ComposerControl";
 import { ComposerContextLabel } from "./ComposerContextLabel";
-import { FolderGit2Icon, FolderGitIcon, FolderIcon } from "lucide-react";
+import { BoxIcon, FolderGit2Icon, FolderGitIcon, FolderIcon } from "lucide-react";
 import { memo, type MouseEvent as ReactMouseEvent } from "react";
 
 import {
+  isDenSessionPath,
   resolveCurrentWorkspaceLabel,
   resolveEnvModeLabel,
   resolveLockedWorkspaceLabel,
@@ -59,6 +60,7 @@ export const BranchToolbarEnvModeSelector = memo(function BranchToolbarEnvModeSe
       label: resolveCurrentWorkspaceLabel(activeWorktreePath),
     },
     { value: "worktree", label: resolveEnvModeLabel("worktree") },
+    { value: "session", label: resolveEnvModeLabel("session") },
     ...(showPreviousWorktree && previousWorktreeLabel
       ? [{ value: PREVIOUS_WORKTREE_SELECT_VALUE, label: previousWorktreeLabel }]
       : []),
@@ -76,7 +78,9 @@ export const BranchToolbarEnvModeSelector = memo(function BranchToolbarEnvModeSe
         className="inline-flex h-7 min-w-0 items-center gap-1.5 border border-transparent px-1.75 font-normal text-muted-foreground/70 text-sm sm:h-6 sm:text-xs"
         data-composer-context-control
       >
-        {activeWorktreePath ? (
+        {isDenSessionPath(activeWorktreePath) ? (
+          <BoxIcon className="size-3" />
+        ) : activeWorktreePath ? (
           <FolderGitIcon className="size-3" />
         ) : effectiveEnvMode === "worktree" ? (
           <FolderGit2Icon className="size-3" />
@@ -130,7 +134,9 @@ export const BranchToolbarEnvModeSelector = memo(function BranchToolbarEnvModeSe
             />
           }
         >
-          {effectiveEnvMode === "worktree" ? (
+          {effectiveEnvMode === "session" ? (
+            <BoxIcon className="size-3" />
+          ) : effectiveEnvMode === "worktree" ? (
             <FolderGit2Icon className="size-3" />
           ) : activeWorktreePath ? (
             <FolderGitIcon className="size-3" />
@@ -142,9 +148,11 @@ export const BranchToolbarEnvModeSelector = memo(function BranchToolbarEnvModeSe
           </ComposerContextLabel>
         </TooltipTrigger>
         <TooltipPopup>
-          {effectiveEnvMode === "worktree"
-            ? resolveEnvModeLabel("worktree")
-            : resolveCurrentWorkspaceLabel(activeWorktreePath)}
+          {effectiveEnvMode === "session"
+            ? "A sandboxed copy of this project"
+            : effectiveEnvMode === "worktree"
+              ? resolveEnvModeLabel("worktree")
+              : resolveCurrentWorkspaceLabel(activeWorktreePath)}
           {shortcutLabel ? ` · ${shortcutLabel}` : null}
         </TooltipPopup>
       </Tooltip>
@@ -169,6 +177,12 @@ export const BranchToolbarEnvModeSelector = memo(function BranchToolbarEnvModeSe
             <span className="inline-flex items-center gap-1.5">
               <FolderGit2Icon className="size-3" />
               {resolveEnvModeLabel("worktree")}
+            </span>
+          </SelectItem>
+          <SelectItem value="session">
+            <span className="inline-flex items-center gap-1.5">
+              <BoxIcon className="size-3" />
+              {resolveEnvModeLabel("session")}
             </span>
           </SelectItem>
           {showPreviousWorktree && previousWorktreeLabel ? (

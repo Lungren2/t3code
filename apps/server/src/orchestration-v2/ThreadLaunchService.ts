@@ -59,6 +59,7 @@ import { makeProviderFailure } from "@t3tools/provider-core/server/failure";
 import { randomUuidV4 } from "@t3tools/provider-core/server/randomUuid";
 import { DispatchModeLimit } from "./DispatchModeLimit.ts";
 import * as ThreadManagement from "./ThreadManagementService.ts";
+import { openDenSession } from "../denSession.ts";
 
 // The agent waits for its branch name; a rate-limited provider would hold it for minutes.
 const BRANCH_NAME_TIMEOUT = "20 seconds";
@@ -75,7 +76,8 @@ export type ThreadLaunchWorkspaceStrategy =
       readonly baseRef: string;
       readonly branch?: string | undefined;
       readonly startFromOrigin?: boolean | undefined;
-    };
+    }
+  | { readonly type: "den_session"; readonly branch?: string | undefined };
 
 export interface ThreadLaunchInitialMessage {
   readonly messageId?: MessageId;
@@ -638,6 +640,13 @@ const make = Effect.gen(function* () {
         input.workspaceStrategy.type === "existing_worktree"
           ? input.workspaceStrategy.worktreePath
           : null;
+      if (input.workspaceStrategy.type === "den_session") {
+        const session = yield* openDenSession(project.workspaceRoot, threadId).pipe(
+          Effect.mapError(mapError(input, "provision-worktree", threadId)),
+        );
+        worktreePath = session.worktreePath;
+        branch = session.branch;
+      }
       if (input.workspaceStrategy.type === "worktree") {
         if (runId !== null) {
           yield* threads
@@ -943,8 +952,9 @@ const make = Effect.gen(function* () {
           .pipe(Effect.mapError(mapError(input, "update-thread", threadId)));
       }
       yield* setupTracker.stageStatus(threadId, "setup-script", "running");
+      // A session's dependencies were installed in its sandboxed base.
       const setup =
-        worktreePath === null
+        worktreePath === null || input.workspaceStrategy.type === "den_session"
           ? ({ status: "no-script" } as const)
           : yield* setupScripts
               .runForThread({
@@ -1436,7 +1446,9 @@ const make = Effect.gen(function* () {
             const accepted = current?.runs.find((run) => run.id === runId)?.workspacePreparation;
             const preparationStrategy: ThreadLaunchWorkspaceStrategy =
               Option.isSome(launchReceipt) &&
-              (accepted?.type === "worktree" || accepted?.type === "existing_worktree")
+              (accepted?.type === "worktree" ||
+                accepted?.type === "existing_worktree" ||
+                accepted?.type === "den_session")
                 ? accepted
                 : Option.isSome(launchReceipt) &&
                     workspaceStrategy.type === "root" &&

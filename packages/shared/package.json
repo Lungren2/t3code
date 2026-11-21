@@ -363,6 +363,10 @@
       "types": "./src/nodeRuntime.ts",
       "import": "./src/nodeRuntime.ts"
     },
+    "./denSession": {
+      "types": "./src/denSession.ts",
+      "import": "./src/denSession.ts"
+    },
     "./AgentScope": {
       "types": "./src/AgentScope.ts",
       "import": "./src/AgentScope.ts"

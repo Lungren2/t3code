@@ -1296,9 +1296,12 @@ export function useComposerSend(input: ComposerSendInput) {
     let backgroundDraftOpened = false;
     let turnStartSucceeded = false;
     if (failure === null && turnAttachmentsResult._tag === "Success") {
+      const startInDenSession =
+        isLocalDraftThread && sendEnvMode === "session" && !activeThread.worktreePath;
       const bootstrap =
         isLocalDraftThread || baseBranchForWorktree
           ? {
+              ...(startInDenSession ? { prepareDenSession: true } : {}),
               ...(isLocalDraftThread
                 ? {
                     createThread: {
@@ -1313,7 +1316,7 @@ export function useComposerSend(input: ComposerSendInput) {
                     },
                   }
                 : {}),
-              ...(baseBranchForWorktree
+              ...(baseBranchForWorktree && !startInDenSession
                 ? {
                     prepareWorktree: {
                       projectCwd: activeProject.workspaceRoot,

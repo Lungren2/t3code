@@ -1,4 +1,5 @@
 import { AgentScope } from "@t3tools/shared/AgentScope";
+import { DEN_SESSION_DRIVERS, denSessionForPath } from "@t3tools/shared/denSession";
 import * as KeyedLock from "@t3tools/shared/KeyedLock";
 import { resolveProjectSettings } from "@t3tools/shared/projectSettings";
 import {
@@ -562,6 +563,17 @@ export const layerWithOptions = (
           : mcpPrepareLock.withLock(
               threadId,
               Effect.gen(function* () {
+                // T3's tools can start threads outside the sandbox, so a session gets none. If
+                // the thread can't be read, it might be in one.
+                const sandboxed = yield* projectionStore.getThread(threadId).pipe(
+                  Effect.map((thread) => denSessionForPath(thread.worktreePath) !== null),
+                  Effect.orElseSucceed(() => true),
+                );
+                if (sandboxed) {
+                  yield* mcpSessionRegistry.revokeThread(threadId);
+                  yield* mcpSessions.clear(threadId);
+                  return { mcpCredentialId: undefined, issued: false };
+                }
                 // Live providers build MCP clients once; reuse credentials across workspace handoffs.
                 const { browser: browserToolsAvailable, device: deviceToolsAvailable } =
                   yield* agentAccessSettings(threadId);
@@ -3029,6 +3041,16 @@ export const layerWithOptions = (
                     }),
                 ),
               );
+              if (
+                denSessionForPath(input.runtimePolicy.cwd) !== null &&
+                !DEN_SESSION_DRIVERS.has(adapter.driver)
+              ) {
+                return yield* new ProviderSessionOpenError({
+                  instanceId: input.modelSelection.instanceId,
+                  providerSessionId: input.providerSessionId,
+                  cause: new Error("Only Claude Code and Codex can run in a session."),
+                });
+              }
               const openedWithLinkedEnvironments = yield* readLinkedEnvironments;
               const prepared = yield* prepareMcpSession(
                 input.threadId,

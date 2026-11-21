@@ -2266,10 +2266,14 @@ export default function ChatView(props: ChatViewProps) {
       ? (pendingServerThreadStartFromOriginByThreadId[activeThread?.id ?? ""] ??
         activeProjectSettings.settings.newWorktreesStartFromOrigin)
       : false;
-  const sendEnvMode = resolveSendEnvMode({
-    requestedEnvMode: envMode,
-    isGitRepo,
-  });
+  // A session on a folder without git fails visibly rather than running unsandboxed.
+  const sendEnvMode: DraftThreadEnvMode =
+    envMode === "session"
+      ? "session"
+      : resolveSendEnvMode({
+          requestedEnvMode: envMode,
+          isGitRepo,
+        });
   const localCheckoutBranchMismatch = isServerThread
     ? resolveLocalCheckoutBranchMismatch({
         effectiveEnvMode: envMode,
